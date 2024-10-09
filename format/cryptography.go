@@ -11,32 +11,9 @@ import (
 	"io"
 )
 
-func EncryptAES(key []byte, plaintext string) (string, error) {
-
-	c, err := aes.NewCipher(key)
-	if err != nil {
-		return "", err
-	}
-
-	out := make([]byte, len(plaintext))
-
-	c.Encrypt(out, []byte(plaintext))
-
-	return hex.EncodeToString(out), nil
-}
-
-func DecryptAES(key []byte, ct string) (string, error) {
-	ciphertext, _ := hex.DecodeString(ct)
-
-	c, err := aes.NewCipher(key)
-	if err != nil {
-		return "", err
-	}
-
-	pt := make([]byte, len(ciphertext))
-	c.Decrypt(pt, ciphertext)
-
-	return string(pt[:]), nil
+func ToHashSHA256(input string) string {
+	hash := sha256.Sum256([]byte(input))
+	return hex.EncodeToString(hash[:])
 }
 
 // Fungsi untuk membuat hash SHA-256 dari passphrase
@@ -62,7 +39,7 @@ func unpad(data []byte) ([]byte, error) {
 	return data[:(length - unpadding)], nil
 }
 
-// Fungsi untuk enkripsi
+// Fungsi untuk Encrypt
 func Encrypt(text, passphrase string) (string, error) {
 	key := createHash(passphrase)
 	block, err := aes.NewCipher(key)
@@ -88,7 +65,7 @@ func Encrypt(text, passphrase string) (string, error) {
 	return hex.EncodeToString(ciphertext), nil
 }
 
-// Fungsi untuk dekripsi
+// Fungsi untuk Decrypt
 func Decrypt(encryptedText, passphrase string) (string, error) {
 	key := createHash(passphrase)
 	ciphertext, _ := hex.DecodeString(encryptedText)
